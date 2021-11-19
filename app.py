@@ -20,11 +20,11 @@ def upload_file():
         f.save(secure_filename(f.filename))
         seconds, error = get_total_seconds(f.filename)
         os.remove(f.filename)
-        if error=='':
-            error_title="The following errors are found in the file"
+        if not error == '':
+            error_title = "The following errors are found in the file"
         else:
-            error_title=""
-        return render_template("output.html", output=convert_to_hours(seconds), error=error,error_title=error_title)
+            error_title = ""
+        return render_template("output.html", output=convert_to_hours(seconds), error=error, error_title=error_title)
 
 
 def convert_to_hours(secs):
@@ -66,7 +66,7 @@ def get_total_seconds(file_path):
 
         if flag != 2:
             print('Format mismatch at line %d' % i)
-            error=error+('Format mismatch at line %d \n' % i)
+            error = error + ('Format mismatch at line %d \n' % i)
         i = i + 1
 
     return seconds, error
