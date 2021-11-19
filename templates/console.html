@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+.division{  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #45a049;
+}
+</style>
+<body>
+<h3>Small Parser</h3>
+<div>
+
+    <p class="division">The total time taken from time log file is  {{ output }}</p>
+    {% if shown %}
+    <div class="division">
+    <p>The unparsable errors </p>
+    <p >{{ log }}</p>
+        </div>
+    {% endif %}
+    <button onclick="location.href='/';" class="button">Back</button>
+    </div>
+</body>
+</html>
