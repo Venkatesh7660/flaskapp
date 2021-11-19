@@ -7,67 +7,73 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-app.debug=True
+app.debug = True
+
+
 @app.route('/')
 def home():
     return render_template('home.html')
 
 
 @app.route('/submit', methods=['GET', 'POST'])
-def console():
+def submit():
     if request.method == 'POST':
         file = request.files['file']
         file.save(secure_filename(file.filename))
-        seconds, log = get_seconds_from_log_file(file.filename)
-        if not log == '':
-            shown = True
+        seconds, error_log = get_total_seconds(file.filename)
+        if not error_log == '':
+            is_error_log_visible = True
         else:
-            shown = False
+            is_error_log_visible = False
         os.remove(file.filename)
-        return render_template("console.html", output=convert(seconds), error_log=log, shown=shown)
+        return render_template("out.html", output=sec_to_hours(seconds), error_log=error_log, is_error_log_visible=is_error_log_visible)
 
 
-def get_seconds_from_log_file(file_path):
+def get_total_seconds(file_path):
     file = open(file_path, "r")
-    total_seconds = 0
+    seconds = 0
     i = 2
-    if not "time log:" in file.readline().lower():
-        print("Text file should contain text as time log")
+    error_log = ""
+    first_lne = file.readline().lower()
+    if not "time log:" in first_lne:
+        print("Requires a valid time log")
         return
-    for each_line in file:
-        each_line = each_line.replace('-', " ")
-        word_array = each_line.split()
+    for line in file:
+        line = line.replace('-', " ")
+        data = line.split()
         first = True
         flag = 0
-        log=''
-        for words in word_array:
+        for words in data:
             try:
                 if first:
-                    start = datetime.strptime(words, "%I:%M%p")
+                    t1 = datetime.strptime(words, "%I:%M%p")
                     first = False
                     flag = flag + 1
                 else:
-                    end = datetime.strptime(words, "%I:%M%p")
+                    t2 = datetime.strptime(words, "%I:%M%p")
                     flag = flag + 1
-                    if start <= end:
-                        diff = end - start
-                        total_seconds = total_seconds + diff.seconds
+                    if t1 <= t2:
+                        diff = t2 - t1
+                        seconds = seconds + diff.seconds
                     else:
-                        diff = end + timedelta(days=1) - start
-                        total_seconds = total_seconds + diff.seconds
+                        diff = t2 + timedelta(days=1) - t1
+                        seconds = seconds + diff.seconds
             except ValueError as e:
                 pass
         if flag != 2:
-            print('Invalid time format at %d' % i)
-            log=log+'Invalid time format at %d\n' % i
+            print('Format not found at %d' % i)
+            error_log = error_log + 'Format not found at %d\n' % i
         i = i + 1
-    return total_seconds,log
+    return seconds,error_log
 
 
-def convert(secs):
-    mints, sec = divmod(secs, 60)
-    hour, mints = divmod(mints, 60)
-    return "%d hours %d minutes " % (hour, mints)
+def sec_to_hours(seconds):
+    a = str(seconds // 3600)
+    b = str((seconds % 3600) // 60)
+    c = str((seconds % 3600) % 60)
+    d = "{} hours {} mins {} seconds".format(a, b, c)
+    return d
+
 
 
 if __name__ == '__main__':

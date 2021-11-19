@@ -15,7 +15,7 @@
 <h2>Small Parser</h2>
 <div>
     <p >The total time :  {{ output }}</p>
-    {% if shown %}
+    {% if is_error_log_visible %}
     <p style="color: darkred">{{ error_log }}</p>
     {% endif %}
     <button class="back-button" onclick="location.href='/';" >Home</button>
