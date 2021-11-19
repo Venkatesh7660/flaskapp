@@ -20,8 +20,11 @@ def upload_file():
         f.save(secure_filename(f.filename))
         seconds, error = get_total_seconds(f.filename)
         os.remove(f.filename)
-        print(error)
-        return render_template("output.html", output=convert_to_hours(seconds), error=error)
+        if error=='':
+            error_title="The following errors are found in the file"
+        else:
+            error_title=""
+        return render_template("output.html", output=convert_to_hours(seconds), error=error,error_title=error_title)
 
 
 def convert_to_hours(secs):
