@@ -7,14 +7,14 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-
+app.debug=True
 @app.route('/')
 def home():
     return render_template('home.html')
 
 
 @app.route('/submit', methods=['GET', 'POST'])
-def submit():
+def console():
     if request.method == 'POST':
         file = request.files['file']
         file.save(secure_filename(file.filename))
@@ -24,7 +24,7 @@ def submit():
         else:
             shown = False
         os.remove(file.filename)
-        return render_template("console.html", output=convert(seconds), log=log, shown=shown)
+        return render_template("console.html", output=convert(seconds), error_log=log, shown=shown)
 
 
 def get_seconds_from_log_file(file_path):
